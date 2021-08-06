@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:checkable="true"
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    app:cardCornerRadius="20dp"
+    android:layout_margin="15dp"
+    android:id="@+id/card">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Date: "
+            android:id="@+id/date"
+            android:layout_margin="15dp"
+            android:textSize="25sp"
+            android:fontFamily="sans-serif-condensed-medium"/>
+
+
+
+       <TextView
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_below="@+id/date"
+           android:fontFamily="sans-serif-condensed-medium"
+           android:layout_margin="15dp"
+           android:hint="Blood Pressure:"
+           android:textSize="25dp"
+           android:id="@+id/bp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/symptoms"
+            android:layout_margin="15dp"
+            android:hint="Symptoms:"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:layout_below="@+id/bp"
+            android:textSize="25dp"/>
+
+
+
+    </RelativeLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "269084291497",
+    "firebase_url": "https://medicallocator-318808-default-rtdb.firebaseio.com",
+    "project_id": "medicallocator-318808",
+    "storage_bucket": "medicallocator-318808.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:269084291497:android:5c202c39f1effe203494b8",
+        "android_client_info": {
+          "package_name": "com.naitech.medicalLocator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "269084291497-nt8vgqc7q903t6551cnk4fpbgd1925qt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1JjUi_OPFhH8ZDeJi-J6UCk_PRAoaQNI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "269084291497-nt8vgqc7q903t6551cnk4fpbgd1925qt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

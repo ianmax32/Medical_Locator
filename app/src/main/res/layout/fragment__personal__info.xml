@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragment_Personal_Info"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:orientation="vertical">
+
+
+        <!-- TODO: Update blank fragment layout -->
+        <ImageButton
+            android:id="@+id/profileImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/userdefaultpic"
+            android:contextClickable="true"
+            android:maxWidth="200dp"
+            android:maxHeight="200dp"
+            android:layout_gravity="center"
+            android:tooltipText="Select Profile Picture" />
+
+        <View style="@style/Divider"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Gender"
+            android:textSize="20sp"
+            app:endIconMode="dropdown_menu"
+            app:errorEnabled="true"
+            app:startIconDrawable="@drawable/ic_gender">
+
+            <AutoCompleteTextView
+                android:id="@+id/gender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            app:startIconDrawable="@drawable/ic_person_24dp"
+            app:endIconMode="clear_text"
+            app:errorEnabled="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:textSize="20sp"
+            android:hint="First name"
+            android:id="@+id/fName"
+            android:textAlignment="center">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:maxLines="1"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            app:startIconDrawable="@drawable/ic_person_24dp"
+            app:endIconMode="clear_text"
+            app:errorEnabled="true"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:hint="Surname"
+            android:id="@+id/SName"
+            android:textAlignment="center">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:maxLines="1"
+                android:inputType="textPersonName"
+                android:layout_height="wrap_content"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            app:startIconDrawable="@drawable/ic_portrait_24dp"
+            app:endIconMode="clear_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorEnabled="true"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:textSize="20sp"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:hint="ID Number/Passport"
+            android:id="@+id/idNumber"
+            android:textAlignment="center">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:inputType="numberSigned"
+                android:maxLines="1"
+                android:layout_height="wrap_content"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            app:startIconDrawable="@drawable/ic_dialpad_24dp"
+            app:errorEnabled="true"
+            app:endIconMode="clear_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:textSize="20sp"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:hint="Phone Number"
+            android:id="@+id/phoneNumber"
+            android:textAlignment="center">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:inputType="phone"
+                android:maxLines="1"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            app:startIconDrawable="@drawable/ic_work_24dp"
+            app:endIconMode="clear_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorEnabled="true"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:hint="Occupation"
+            android:id="@+id/occupation"
+            android:textColor="#ffffff"
+            android:textAlignment="center">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:maxLines="1"
+                android:inputType="textAutoComplete"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            app:startIconDrawable="@drawable/ic_date_24dp"
+            app:endIconMode="clear_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorEnabled="true"
+            android:inputType="none"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:hint="Date of Birth"
+            android:textAlignment="center">
+
+            <AutoCompleteTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:id="@+id/dob"
+                android:inputType="none"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            app:startIconDrawable="@drawable/ic_language_24dp"
+            app:endIconMode="dropdown_menu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorEnabled="true"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:hint="Language"
+
+            android:textAlignment="center">
+
+            <AutoCompleteTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/language"
+                android:inputType="none"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            app:startIconDrawable="@drawable/ic_mstatus_24dp"
+            app:endIconMode="dropdown_menu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorEnabled="true"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:hint="Marital Status"
+
+            android:textAlignment="center">
+
+            <AutoCompleteTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:id="@+id/maritalStatus"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFileCreate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minWidth="300dp"
+                android:layout_marginBottom="10dp"
+                android:text="CREATE FILE"
+                app:cornerRadius="25dp" />
+
+
+    </LinearLayout>
+
+</ScrollView>

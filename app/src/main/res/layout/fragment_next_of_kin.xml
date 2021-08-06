@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Next_of_kin"
+    android:background="@drawable/rounded_buttons"
+    android:layout_margin="10dp"
+    android:columnCount="2"
+    android:rowCount="4"
+    android:padding="50dp">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <TextView
+        android:layout_gravity="center"
+        android:textSize="20sp"
+        android:layout_columnWeight="0.3"
+        android:layout_rowWeight="0.2"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:text="Name"
+        android:textAlignment="center"/>
+
+    <EditText
+        android:layout_gravity="fill"
+        android:textSize="20sp"
+        android:layout_columnWeight="0.7"
+        android:layout_rowWeight="0.2"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:inputType="text"
+        android:id="@+id/nextofkinname"/>
+    <TextView
+        android:layout_gravity="center"
+        android:layout_columnWeight="0.3"
+        android:layout_rowWeight="0.5"
+        android:textSize="20sp"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:text="Relationship"
+        android:textAlignment="center"/>
+
+    <EditText
+        android:layout_gravity="center_vertical"
+        android:layout_columnWeight="1.7"
+        android:layout_rowWeight="0.5"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:inputType="text"
+        android:id="@+id/relationshiptonextofkin"/>
+
+    <TextView
+        android:layout_gravity="center"
+        android:layout_columnWeight="0.3"
+        android:layout_rowWeight="0.5"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:text="Address"
+        android:textAlignment="center"/>
+
+    <EditText
+        android:layout_gravity="center_vertical"
+        android:layout_columnWeight="1.7"
+        android:layout_rowWeight="0.5"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        android:scrollHorizontally="false"
+        android:id="@+id/nextofkinaddress"/>
+
+
+    <TextView
+        android:layout_gravity="center"
+        android:layout_columnWeight="0.3"
+        android:layout_rowWeight="0.5"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:text="Phone Number"
+        android:textAlignment="center"/>
+
+    <EditText
+        android:layout_gravity="center_vertical"
+        android:layout_columnWeight="1.7"
+        android:layout_rowWeight="0.5"
+        android:textSize="20sp"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:inputType="number"
+        android:id="@+id/nextofkinPhoneNumber"/>
+
+
+
+
+
+</GridLayout>

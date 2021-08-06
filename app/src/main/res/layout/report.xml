@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clickable="false"
+    android:focusable="true"
+    android:checkable="true"
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    app:cardCornerRadius="20dp"
+    android:layout_margin="15dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/lin1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date:"
+                android:layout_margin="15dp"
+                android:textSize="25sp"
+                android:fontFamily="sans-serif-condensed-medium"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/datereport"
+                android:text="test"
+                android:layout_margin="15dp"
+                android:textSize="17sp"
+                android:fontFamily="sans-serif-condensed-medium"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/lin2"
+            android:layout_below="@+id/lin1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/date"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:layout_margin="15dp"
+                android:text="Blood Pressure:"
+                android:textSize="25dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/date"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:layout_margin="15dp"
+                android:text="Blood Pressure:"
+                android:textSize="17dp"
+                android:id="@+id/bpreport"/>
+        </LinearLayout>
+
+        <View style="@style/Divider"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/lin3"
+            android:layout_below="@+id/lin2"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:text="Symptoms:"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:layout_below="@+id/bp"
+                android:textSize="25dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/symptomsreport"
+                android:layout_margin="15dp"
+                android:text="Symptoms:"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:textSize="17dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/lin4"
+            android:layout_below="@+id/lin3"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:text="Prescribed Medication: "
+                android:fontFamily="sans-serif-condensed-medium"
+                android:layout_below="@+id/symptoms"
+                android:textSize="25dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/prescriptionreport"
+                android:text="testpre"
+                android:layout_margin="15dp"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:textSize="17dp"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+
+</com.google.android.material.card.MaterialCardView>

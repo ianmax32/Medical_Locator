@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    tools:context=".MainActivity">
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="My File"
+
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:background="@drawable/rounded_buttons"
+        android:layout_above="@+id/mainpic"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:id="@+id/btnMyFile"
+        android:maxHeight="150dp"
+        android:layout_marginBottom="110dp"
+        android:fontFamily="sans-serif-black"
+        android:textSize="40dp"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/mainpic"
+        android:layout_centerInParent="true"
+        android:id="@+id/mainpic"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Locate Me"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:background="@drawable/rounded_buttons"
+        android:layout_marginBottom="40px"
+        android:layout_below="@+id/mainpic"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="110dp"
+        android:id="@+id/btnLocate"
+        android:maxHeight="150dp"
+        android:fontFamily="sans-serif-black"
+        android:textSize="40dp"/>
+
+</RelativeLayout>
