@@ -81,7 +81,7 @@ public class add extends Fragment {
         genderOps.add("Female");
 
         relationshipOps.add("Child");
-        relationshipOps.add("Parent");
+        //relationshipOps.add("Parent");
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(view.getContext(),R.layout.item,genderOps);
         gender = (AutoCompleteTextView)view.findViewById(R.id.genderAdd);
@@ -172,7 +172,7 @@ public class add extends Fragment {
                     ArrayList<MedicalVisits> uservisits = new ArrayList<MedicalVisits>();
                     Date dateTime =new  Date();
                     String dateCreated = dateTime.toString();
-                    uservisits.add(new MedicalVisits("0/0",dateCreated,"You have not seen a doctor yet and this part will show the symptoms",person.getName()+" this will be the prescription given by your doctor"));
+                    uservisits.add(new MedicalVisits("0/0",dateCreated,person.getName()+" you have not seen a doctor yet and this is shows the symptoms","This will be the prescription","This the temp on the day of visit","Blood gluecose is shown here","Final Diagnosis is added here","Doctor name","Practise Number"));
                     person.setVisits(uservisits);
 
 
@@ -202,10 +202,10 @@ public class add extends Fragment {
                                     final ProgressDialog pd = new ProgressDialog(getContext(),ProgressDialog.THEME_HOLO_DARK);
                                     pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                                     pd.setTitle("Please Wait...");
-                                    //pd.getWindow().getCurrentFocus();
+                                    pd.setCanceledOnTouchOutside(false);
+                                    pd.setCancelable(false);
                                     pd.show();
                                     HashMap userUpdate = new HashMap();
-
                                     userUpdate.put(person.getName(),person);
                                     Log.d("hashmap",userUpdate.toString());
                                     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -215,7 +215,7 @@ public class add extends Fragment {
                                         @Override
                                         public void onSuccess(Object o) {
                                             pd.dismiss();
-                                            getActivity().finish();
+                                            getActivity().onBackPressed();
                                             Toast.makeText(getContext(),"Your file has been successfully created", Toast.LENGTH_SHORT).show();
                                         }
                                     });

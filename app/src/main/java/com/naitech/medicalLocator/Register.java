@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Person;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -38,6 +39,7 @@ public class Register extends AppCompatActivity {
     TextInputLayout password;
     TextInputLayout nameReg;
     TextInputLayout surnReg;
+    ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +53,15 @@ public class Register extends AppCompatActivity {
         nameReg = findViewById(R.id.regName);
         surnReg = findViewById(R.id.regSurname);
         mAuth = FirebaseAuth.getInstance();
+        pd= new ProgressDialog(this,ProgressDialog.THEME_DEVICE_DEFAULT_DARK);
+        pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        pd.setCanceledOnTouchOutside(false);
+        pd.setCancelable(false);
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createUser();
+                pd.show();createUser();
             }
         });
 
@@ -70,7 +76,7 @@ public class Register extends AppCompatActivity {
 
     private void createUser(){
         String emailFromUser = email.getEditText().getText().toString().trim();
-
+        pd.setTitle("Registering "+emailFromUser);
         String passwordFromUser = password.getEditText().getText().toString().trim();
         String nameFromUser = nameReg.getEditText().getText().toString().trim();
         String surnameFromUser = surnReg.getEditText().getText().toString().trim();
@@ -78,15 +84,19 @@ public class Register extends AppCompatActivity {
         if(TextUtils.isEmpty(emailFromUser)){
             email.setError("Email cannot be empty");
             email.requestFocus();
+            pd.dismiss();
         }else if(TextUtils.isEmpty(passwordFromUser) || passwordFromUser.length() < 6){
             password.setError("Password cannot have less than 6 characters");
             password.requestFocus();
+            pd.dismiss();
         }else if(TextUtils.isEmpty(nameFromUser)){
             nameReg.setError("Name Required");
             nameReg.requestFocus();
+            pd.dismiss();
         }else if(TextUtils.isEmpty(surnameFromUser)){
             surnReg.setError("Surname required");
             surnReg.requestFocus();
+            pd.dismiss();
         }else{
             mAuth.createUserWithEmailAndPassword(emailFromUser,passwordFromUser).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
@@ -103,6 +113,7 @@ public class Register extends AppCompatActivity {
                         database.getReference().child("Medical Files").push().setValue(person).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
+                                pd.dismiss();
                                 Toast.makeText(getApplicationContext(),"User Successfully Registered", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(getApplicationContext(), UserLogin.class));
                                 finish();
@@ -111,6 +122,7 @@ public class Register extends AppCompatActivity {
 
                     }else{
                         Log.d("task",task.getException().toString());
+                        pd.dismiss();
                         Toast.makeText(getApplicationContext(),"Registration Failed Please Try Again Later", Toast.LENGTH_SHORT).show();
                     }
                 }

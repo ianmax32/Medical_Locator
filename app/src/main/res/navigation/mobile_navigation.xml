@@ -19,14 +19,8 @@
 
 
     <fragment
-        android:id="@+id/nav_share"
-        android:name="com.naitech.medicalLocator.ui.share.ShareFragment"
-        android:label="@string/menu_share"
-        tools:layout="@layout/fragment_share" />
-
-    <fragment
         android:id="@+id/nav_send"
         android:name="com.naitech.medicalLocator.ui.send.SendFragment"
-        android:label="@string/menu_send"
+        android:label="Send My Document"
         tools:layout="@layout/fragment_send" />
 </navigation>

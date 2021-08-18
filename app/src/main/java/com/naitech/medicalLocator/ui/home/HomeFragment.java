@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
@@ -19,11 +20,15 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,7 +36,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -42,12 +50,17 @@ import com.google.firebase.database.ValueEventListener;
 import com.naitech.medicalLocator.POJOs.MedicalVisits;
 import com.naitech.medicalLocator.POJOs.Person_File;
 import com.naitech.medicalLocator.POJOs.child;
+import com.naitech.medicalLocator.POJOs.feeling;
 import com.naitech.medicalLocator.R;
 import com.naitech.medicalLocator.createFile;
 import com.naitech.medicalLocator.file_adapter;
+import com.naitech.medicalLocator.ui.send.SendFragment;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 public class HomeFragment extends Fragment {
@@ -55,19 +68,23 @@ public class HomeFragment extends Fragment {
     private HomeViewModel homeViewModel;
     private Button btnCreateFile;
     private RecyclerView visitsRecyclerView;
-    ArrayList<MedicalVisits> userVisits = new ArrayList<>();
+    private ArrayList<MedicalVisits> userVisits = new ArrayList<>();
     private file_adapter.RecyclerViewClickListener listener;
-    AutoCompleteTextView selectUser;
-    ArrayList<String> childrenList;
+    private AutoCompleteTextView selectUser;
+    private ArrayList<String> childrenList;
 
-    String name="";
-    String surname="";
-    ArrayList<Person_File> person = new ArrayList<>();
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private String name="";
+    private String surname="";
+    private ArrayList<Person_File> person = new ArrayList<>();
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private String key="";
     private file_adapter adapter;
-    TextInputLayout textUser;
+    private TextInputLayout textUser;
     private ProgressDialog pd;
+    public static String reports = "";
+    private FloatingActionButton fab;
+    private HashMap feelingUpdate = new HashMap();
+
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -78,20 +95,21 @@ public class HomeFragment extends Fragment {
         visitsRecyclerView = root.findViewById(R.id.homeListRecyclerView);
         selectUser = root.findViewById(R.id.selectedUser);
         textUser = root.findViewById(R.id.textInputLayout);
+         fab = root.findViewById(R.id.feeling);
         childrenList = new ArrayList<>();
         pd= new ProgressDialog(getContext(),ProgressDialog.THEME_DEVICE_DEFAULT_DARK);
         pd.setTitle("Getting information...");
         pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        //pd.getWindow().getCurrentFocus();
+        pd.setCanceledOnTouchOutside(false);
+        pd.setCancelable(false);
         pd.show();
+        Log.d("visits from home before",userVisits.toString());
         checkData();
-
+        Log.d("visits from home after",userVisits.toString());
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(root.getContext(),R.layout.item,childrenList);
         selectUser = (AutoCompleteTextView)root.findViewById(R.id.selectedUser);
         selectUser.setAdapter(arrayAdapter);
 
-
-        //selectUser.setListSelection(0);
 
         selectUser.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -99,6 +117,33 @@ public class HomeFragment extends Fragment {
                 Log.d("selected user",parent.getItemAtPosition(position).toString());
                 pd.show();
                 getVisits(parent.getItemAtPosition(position).toString());
+            }
+        });
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View feelingThatDay = getActivity().getLayoutInflater().inflate(R.layout.feeling,null);
+                TextView feelingThat = feelingThatDay.findViewById(R.id.feelingText);
+                MaterialAlertDialogBuilder feelingedit= new MaterialAlertDialogBuilder(getContext(),R.style.ThemeOverlay_MaterialComponents_Dialog_Alert);
+                feelingedit.setTitle("Any Symptoms?");
+                feelingedit.setIcon(R.drawable.ic_report_24dp)
+                        .setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                pd.setTitle("Updating the record");
+                                pd.show();
+                                updateFeeling(feelingThat.getText().toString());
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setView(feelingThatDay).setCancelable(false);
+                feelingedit.show();
             }
         });
 
@@ -113,11 +158,19 @@ public class HomeFragment extends Fragment {
                 TextView bp = report.findViewById(R.id.bpreport);
                 TextView symptoms = report.findViewById(R.id.symptomsreport);
                 TextView prescribed  = report.findViewById(R.id.prescriptionreport);
+                TextView diagnosis  = report.findViewById(R.id.diagnosisreport);
+                TextView bsugar = report.findViewById(R.id.bsugarreport);
+                TextView tempreport  = report.findViewById(R.id.tempreport);
+                TextView doctorInfo  = report.findViewById(R.id.doctorinfo);
 
                 date.setText(userVisits.get(position).getDate().substring(0,10));
                 bp.setText(userVisits.get(position).getBp());
                 symptoms.setText(userVisits.get(position).getSymptoms());
                 prescribed.setText(userVisits.get(position).getPrescription());
+                tempreport.setText(userVisits.get(position).getTemperature());
+                bsugar.setText(userVisits.get(position).getBloodGluecose());
+                diagnosis.setText(userVisits.get(position).getDiagnosis());
+                doctorInfo.setText(userVisits.get(position).getDoctorName() + " P-Number: "+ userVisits.get(position).getDoct_practiceNum());
                 MaterialAlertDialogBuilder visitInfo = new MaterialAlertDialogBuilder(getContext(),R.style.ThemeOverlay_MaterialComponents_Dialog_Alert);
                 visitInfo.setTitle("CHECK UP");
                 visitInfo.setIcon(R.drawable.ic_report_24dp)
@@ -150,6 +203,26 @@ public class HomeFragment extends Fragment {
 
 
         return root;
+    }
+
+    public void updateFeeling(String feeling){
+        getFeelings();
+        Date dateTime =new  Date();
+        String dateCreated = dateTime.toString();
+        feelingUpdate.put(dateCreated,feeling);
+        Log.d("hashmap",feelingUpdate.toString());
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        Task task = database.getReference().child("Medical Files").child(key).child("Feeling").updateChildren(feelingUpdate);
+
+        task.addOnSuccessListener(new OnSuccessListener() {
+            @Override
+            public void onSuccess(Object o) {
+                pd.dismiss();
+                //getActivity().finish();
+                Toast.makeText(getContext(),"The record has been kept", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     @Override
@@ -233,15 +306,15 @@ public class HomeFragment extends Fragment {
                     userVisits.add(visit);
                 }
                 Log.d("list now",String.valueOf(userVisits.size()));
-                userVisits.add(new MedicalVisits("test1","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
-                userVisits.add(new MedicalVisits("test2","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
-                userVisits.add(new MedicalVisits("test3","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
-                userVisits.add(new MedicalVisits("test4","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
-                userVisits.add(new MedicalVisits("test5","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
-                userVisits.add(new MedicalVisits("test6","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
-                userVisits.add(new MedicalVisits("test7","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
-                userVisits.add(new MedicalVisits("test8","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
-                userVisits.add(new MedicalVisits("test9","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
+                userVisits.add(new MedicalVisits("test1","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
+                userVisits.add(new MedicalVisits("test2","Saturday, 30 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
+                userVisits.add(new MedicalVisits("test3","Friday, 30 September 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
+                userVisits.add(new MedicalVisits("test4","Monday, 30 October 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
+                userVisits.add(new MedicalVisits("test5","Wednesday, 30 November 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
+                userVisits.add(new MedicalVisits("test6","Tuesady, 30 December 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
+                userVisits.add(new MedicalVisits("test7","Thursday, 30 January 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
+                userVisits.add(new MedicalVisits("test8","Friday, 30 February 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
+                userVisits.add(new MedicalVisits("test9","Saturday, 30 October 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
 
                 pd.dismiss();
                 adapter.notifyDataSetChanged();
@@ -273,17 +346,42 @@ public class HomeFragment extends Fragment {
                         userVisits.add(visit);
                     }
                     Log.d("list now",String.valueOf(userVisits.size()));
-                    userVisits.add(new MedicalVisits("test1","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
-                    userVisits.add(new MedicalVisits("test2","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
-                    userVisits.add(new MedicalVisits("test3","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
-                    userVisits.add(new MedicalVisits("test4","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
-                    userVisits.add(new MedicalVisits("test5","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
-                    userVisits.add(new MedicalVisits("test6","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
-                    userVisits.add(new MedicalVisits("test7","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
-                    userVisits.add(new MedicalVisits("test8","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
-                    userVisits.add(new MedicalVisits("test9","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use"));
+                    userVisits.add(new MedicalVisits("test1","Thursday, 05 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
+                    userVisits.add(new MedicalVisits("test2","Saturday, 30 August 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
+                    userVisits.add(new MedicalVisits("test3","Friday, 30 September 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
+                    userVisits.add(new MedicalVisits("test4","Monday, 30 October 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
+                    userVisits.add(new MedicalVisits("test5","Wednesday, 30 November 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
+                    userVisits.add(new MedicalVisits("test6","Tuesady, 30 December 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
+                    userVisits.add(new MedicalVisits("test7","Thursday, 30 January 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
+                    userVisits.add(new MedicalVisits("test8","Friday, 30 February 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
+                    userVisits.add(new MedicalVisits("test9","Saturday, 30 October 2021","Fever or chills · Cough · Shortness of breath or difficulty breathing · Fatigue · Muscle or body aches · Headache","a written direction or order for the preparing and use","37 Deg","This is the diagnosis","7.8 mmol/L","Ian Masaga","4512781"));
                     pd.dismiss();
                     adapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+
+    }
+
+    public void getFeelings(){
+        Log.d("feelings","Called");
+        if(name.equals("CURRENT USER")){
+            checkData();
+        }else{
+            Query query = database.getReference("Medical Files").child(key).child("Feeling");
+            query.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    feelingUpdate.clear();
+                    for(DataSnapshot data:snapshot.getChildren()){
+                        feelingUpdate.put(data.getKey(),data.getValue());
+                    }
+                    Log.d("feelingsupdate",feelingUpdate.toString());
                 }
 
                 @Override
@@ -300,4 +398,19 @@ public class HomeFragment extends Fragment {
         super.onResume();
         checkData();
     }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Bundle bundle = new Bundle();
+        bundle.putString("visits",userVisits.toString());
+
+        SendFragment fragment2 = SendFragment.newInstance(userVisits.toString());
+
+
+        //Log.d("bundle",fragment2.getArguments().toString());
+    }
+
+
 }

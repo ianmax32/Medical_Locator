@@ -85,20 +85,20 @@ public class fragment_Personal_Info extends Fragment {
 
     private AutoCompleteTextView gender;
     private AutoCompleteTextView language , maritalStatus;
-    String personGender = "";
-    String languageSpeak = "";
-    String mStatus = "";
-    Button btnFileCreate;
-    TextInputLayout fname, sname,idNumber, phoneNumber, occupation;
-    AutoCompleteTextView dob;
-    AlertDialog.Builder alert;
-    ImageButton profileImage;
+    private String personGender = "";
+    private String languageSpeak = "";
+    private String mStatus = "";
+    private Button btnFileCreate;
+    private TextInputLayout fname, sname,idNumber, phoneNumber, occupation;
+    private AutoCompleteTextView dob;
+    private AlertDialog.Builder alert;
+    private ImageButton profileImage;
     private int SELECT_IMAGE = 1;
-    ProgressBar simpleProgressBar;
-    String key = "";
-    Person_File person = new Person_File();
-    FirebaseStorage storage = FirebaseStorage.getInstance();
-    Uri profilePic;
+    private ProgressBar simpleProgressBar;
+    private String key = "";
+    private Person_File person = new Person_File();
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
+    private Uri profilePic;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -285,10 +285,10 @@ public class fragment_Personal_Info extends Fragment {
                 }if(occupation.getEditText().getText().length() == 0){
                     occupation.setError("What do you do?");
                     occupation.requestFocus();
-                }/*if(dob.getListSelection() < 0){
+                }if(dob.getText().length() < 0){
                     dob.setError("Date Required");
                     dob.requestFocus();
-                }if(profileImage.getTag().equals("R.drawable.userdefaultpic")){
+                }/*if(profileImage.getTag().equals("R.drawable.userdefaultpic")){
                     profileImage.requestFocus();
                 }*/else{
                     person.setName(fname.getEditText().getText().toString());
@@ -302,7 +302,7 @@ public class fragment_Personal_Info extends Fragment {
                     ArrayList<MedicalVisits> uservisits = new ArrayList<MedicalVisits>();
                     Date dateTime =new  Date();
                     String dateCreated = dateTime.toString();
-                    uservisits.add(new MedicalVisits("0/0",dateCreated,"You have not seen a doctor yet","This will be the prescription"));
+                    uservisits.add(new MedicalVisits("0/0",dateCreated,person.getName()+" you have not seen a doctor yet and this is shows the symptoms","This will be the prescription","This the temp on the day of visit","Blood gluecose is shown here","Final Diagnosis is added here","Doc Name","Practice Number"));
                     person.setVisits(uservisits);
 
                     if(personGender.equals("Male")){
@@ -336,7 +336,8 @@ public class fragment_Personal_Info extends Fragment {
                                     final ProgressDialog pd = new ProgressDialog(getContext(),ProgressDialog.THEME_HOLO_DARK);
                                     pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                                     pd.setTitle("Please Wait...");
-                                    //pd.getWindow().getCurrentFocus();
+                                    pd.setCanceledOnTouchOutside(false);
+                                    pd.setCancelable(false);
                                     pd.show();
                                     HashMap userUpdate = new HashMap();
 
@@ -361,8 +362,6 @@ public class fragment_Personal_Info extends Fragment {
                                                         @Override
                                                         public void onFailure(@NonNull Exception exception) {
                                                             pd.dismiss();
-                                                            // Handle unsuccessful uploads
-                                                            // ...
                                                         }
                                                     }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                                                 @Override

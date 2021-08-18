@@ -3,6 +3,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,10 +42,11 @@ public class UserLogin extends AppCompatActivity {
     private int RC_SIGNIN = 1;
 
     Button loginbtn;
-    Button registeruser;
+    Button registeruser, forgotPassword;
     FirebaseAuth mAuthLogin;
     TextInputLayout username;
     TextInputLayout password;
+    ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +60,12 @@ public class UserLogin extends AppCompatActivity {
         registeruser = findViewById(R.id.btnRegister);
         username =  findViewById(R.id.username);
         password = findViewById(R.id.password);
+        forgotPassword = findViewById(R.id.btnForgotPassword);
         mAuth = FirebaseAuth.getInstance();
+        pd= new ProgressDialog(this,ProgressDialog.THEME_DEVICE_DEFAULT_DARK);
+        pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        pd.setCanceledOnTouchOutside(false);
+        pd.setCancelable(false);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -80,6 +87,15 @@ public class UserLogin extends AppCompatActivity {
             }
         });
 
+
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent forgot = new Intent(getApplicationContext(),forgotPWord.class);
+                startActivity(forgot);
+            }
+        });
+
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
         signInButton.setOnClickListener(new View.OnClickListener() {
@@ -91,7 +107,10 @@ public class UserLogin extends AppCompatActivity {
     }
 
     private void loginUser(){
+
         String emailFromUser = username.getEditText().getText().toString().trim();
+        pd.setTitle("Login as "+emailFromUser);
+        pd.show();
         String passwordFromUser = password.getEditText().getText().toString().trim();
         Log.d("user",emailFromUser+" "+passwordFromUser);
         if(TextUtils.isEmpty(emailFromUser)){
@@ -106,10 +125,13 @@ public class UserLogin extends AppCompatActivity {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
                         Toast.makeText(getApplicationContext(),"User Logged in successfully", Toast.LENGTH_SHORT).show();
+                        pd.dismiss();
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         finish();
                     }else{
+                        pd.dismiss();
                         Toast.makeText(getApplicationContext(),"Login failed Username or Password Wrong", Toast.LENGTH_LONG).show();
+                        forgotPassword.setVisibility(View.VISIBLE);
                         password.getEditText().setText("");
                         username.getEditText().setText("");
                         username.requestFocus();

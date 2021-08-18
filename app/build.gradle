@@ -13,6 +13,9 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    lintOptions{
+        checkReleaseBuilds false
+    }
 
 
     compileOptions {
@@ -26,6 +29,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    packagingOptions {
+        exclude 'com/itextpdf/io/font/cmap_info.txt'
+
+        exclude 'com/itextpdf/io/font/cmap/MSungStd-Light.properties'
+        exclude 'com/itextpdf/io/font/cmap/*'
+    }
+
 }
 
 dependencies {
@@ -55,6 +66,7 @@ dependencies {
     implementation 'net.steamcrafted:materialiconlib:1.1.5'
     implementation 'com.google.firebase:firebase-storage'
     implementation 'com.firebaseui:firebase-ui-storage:7.2.0'
-    implementation fileTree(dir: 'C:\\Users\\Ian\\Desktop', include: ['*.aar', '*.jar'], exclude: [])
+    implementation 'com.itextpdf:itext7-core:7.0.2'
+
 
 }

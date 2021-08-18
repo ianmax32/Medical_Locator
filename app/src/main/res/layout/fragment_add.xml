@@ -117,7 +117,7 @@
             android:textSize="20sp"
             android:gravity="center"
             android:enabled="false"
-            android:hint="ID Number/Passport"
+            android:hint="Identity Number"
             android:id="@+id/idNumberAdd"
             android:textAlignment="center">
 

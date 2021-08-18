@@ -19,23 +19,47 @@ public class DataParser {
         String latitude = "";
         String longitude = "";
         String reference= "";
+        String rating = "";
+        JSONArray weekvisits;
+        boolean openNow = false;
 
         try {
             if(!googlePlaceJson.isNull("name")){
                 namePlace = googlePlaceJson.getString("name");
             }
             if(!googlePlaceJson.isNull("vicinity")){
-                namePlace = googlePlaceJson.getString("vicinity");
+                vicinity = googlePlaceJson.getString("vicinity");
             }
-            latitude = googlePlaceJson.getJSONObject("geometry").getJSONObject("location").getString("lat");
-            longitude = googlePlaceJson.getJSONObject("geometry").getJSONObject("location").getString("lng");
-            reference = googlePlaceJson.getString("reference");
+            if(!googlePlaceJson.getJSONObject("geometry").getJSONObject("location").isNull("lat")){
+                latitude = googlePlaceJson.getJSONObject("geometry").getJSONObject("location").getString("lat");
+                Log.d("lat from parser",latitude);
+            }
+            if(!googlePlaceJson.getJSONObject("geometry").getJSONObject("location").isNull("lng")){
+                longitude= googlePlaceJson.getJSONObject("geometry").getJSONObject("location").getString("lng");
+                Log.d("lat long from parser",longitude);
+            }
+            if(!googlePlaceJson.getJSONObject("opening_hours").isNull("open_now")){
+                openNow = googlePlaceJson.getJSONObject("opening_hours").getBoolean("open_now");
+            }
+            if(!googlePlaceJson.isNull("reference")){
+                reference = googlePlaceJson.getString("reference");
+            }
+            if(!googlePlaceJson.isNull("rating")){
+                rating = googlePlaceJson.getString("rating");
+            }
+
+
+           // weekvisits = googlePlaceJson.getJSONObject("opening_hours").getJSONArray("weekday_text");
+
 
             googlePlaceMap.put("place_name",namePlace);
             googlePlaceMap.put("vicinity",vicinity);
-            googlePlaceMap.put("lat",latitude);
-            googlePlaceMap.put("lng",longitude);
+            googlePlaceMap.put("lat",longitude);
+            googlePlaceMap.put("lng",latitude);
             googlePlaceMap.put("reference",reference);
+            googlePlaceMap.put("rating",rating);
+            googlePlaceMap.put("open_now",String.valueOf(openNow));
+            Log.d("places info",googlePlaceMap.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }

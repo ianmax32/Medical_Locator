@@ -1,11 +1,20 @@
 package com.naitech.medicalLocator;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -17,6 +26,7 @@ public class GetNearByHospitals extends AsyncTask<Object, String, String> {
 
     private String googlePlaceData, url;
     private GoogleMap nMap;
+    HashMap<String, String> googleNearByHospital;
 
     @Override
     protected String doInBackground(Object... objects) {
@@ -26,7 +36,7 @@ public class GetNearByHospitals extends AsyncTask<Object, String, String> {
         DownloadURL downloadURL = new DownloadURL();
         try {
             googlePlaceData = downloadURL.readUrl(url);
-            Log.d("google places url",googlePlaceData);
+            Log.d("google places url",googlePlaceData.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -40,25 +50,61 @@ public class GetNearByHospitals extends AsyncTask<Object, String, String> {
         DataParser dataParser = new DataParser();
         nearByHospitalsList = dataParser.parse(s);
 
+
         DisplayNearByHospitals(nearByHospitalsList);
     }
 
     private void DisplayNearByHospitals(List<HashMap<String, String>> nearByHospitalsList){
-
         for(int i = 0; i < nearByHospitalsList.size(); i++){
+            Log.d("hospital "+i,nearByHospitalsList.get(i).toString());
             MarkerOptions markerOptions = new MarkerOptions();
-            HashMap<String, String> googleNearByHospital = nearByHospitalsList.get(i);
-            String hosp_name = googleNearByHospital.get("place_name");
-            String vicinity = googleNearByHospital.get("vicinity");
-            double lat = Double.parseDouble(googleNearByHospital.get("lat"));
-            double lng = Double.parseDouble(googleNearByHospital.get("lng"));
-            //String reference  = googleNearByHospital.get("place_name");
+            googleNearByHospital = nearByHospitalsList.get(i);
+            Log.d("hospital info "+i,googleNearByHospital.get("place_name")+" "+googleNearByHospital.get("rating"));
+            String hosp_name = "";
+            String vicinity = "";
+            String open_now = "";
+            double rating = 0;
+            double lng = 0;
+            double lat = 0;
 
-            LatLng currLoc = new LatLng(lat, lng);
-            markerOptions.position(currLoc).title(hosp_name + " : "+ vicinity);
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-            nMap.addMarker(markerOptions);
-            nMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currLoc, 15));
+            hosp_name = googleNearByHospital.get("place_name");
+            vicinity = googleNearByHospital.get("vicinity");
+            open_now = googleNearByHospital.get("open_now");
+            if(googleNearByHospital.get("rating")!= null || googleNearByHospital.get("lat")!= null || googleNearByHospital.get("lng")!= null){
+                rating = Double.parseDouble(googleNearByHospital.get("rating"));
+                lng = Double.parseDouble(googleNearByHospital.get("lat"));
+                lat= Double.parseDouble(googleNearByHospital.get("lng"));
+                LatLng currLoc = new LatLng(lat, lng);
+                Log.d("current location from hosp",currLoc.toString());
+                markerOptions.position(currLoc).title(hosp_name);
+                String open = "";
+                if(open_now.equals("true")){
+                    open = "Yes";
+                }else{
+                    open = "No";
+                }
+
+
+                markerOptions.snippet("Open Now "+ open+"\nRating: "+rating);
+                markerOptions.describeContents();
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.medicalloc));
+                nMap.addMarker(markerOptions);
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .zoom(10)                   // Sets the zoom
+                        .tilt(45)
+                        .target(currLoc)// Sets the tilt of the camera to 30 degrees
+                        .build();
+                nMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            }else{
+                i++;
+            }
+
+
         }
     }
+
+    public HashMap<String, String> getHospitals(){
+        return googleNearByHospital;
+    }
+
 }

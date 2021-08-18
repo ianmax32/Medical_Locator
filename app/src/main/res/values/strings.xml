@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Medical Locator</string>
-    <string name="maps_api_key">AIzaSyBP4T78uTEEN0uD1lIwV7OGwygW8Bxbq7E</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_medical_account">Medical_account</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>

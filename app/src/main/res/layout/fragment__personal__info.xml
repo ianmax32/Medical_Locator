@@ -14,6 +14,19 @@
         android:layout_margin="15dp"
         android:orientation="vertical">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:layout_marginTop="10dp"
+            android:fontFamily="sans-serif-condensed"
+            android:inputType="textCapCharacters"
+            android:text="Select a profile picture below"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textSize="25sp"
+            />
+
 
         <!-- TODO: Update blank fragment layout -->
         <ImageButton

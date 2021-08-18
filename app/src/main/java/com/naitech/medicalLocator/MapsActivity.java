@@ -1,10 +1,12 @@
 package com.naitech.medicalLocator;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -33,23 +35,26 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private GoogleMap mMap;
     boolean locationPermissionGranted = false;
-    Location lastKnownLocation;
-    Marker mCurrLocationMarker;
-    FusedLocationProviderClient fusedLocationProviderClient;
-    LatLng defaultLocation = new LatLng(26.7034,27.8077);
-    FloatingActionButton showlist;
-    ArrayList<String> hospitals = new ArrayList<>();
+    private Location lastKnownLocation;
+    private Marker mCurrLocationMarker;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private LatLng defaultLocation = new LatLng(26.7034,27.8077);
+    private FloatingActionButton showlist;
+    private ArrayList<String> hospitals = new ArrayList<>();
     private double longitude, latitud;
-    String hospital = "hospital";
-    Object tranferData[] = new Object[2];
-    GetNearByHospitals getNearByHospitals = new GetNearByHospitals();
+    private String hospital = "hospital";
+    private Object tranferData[] = new Object[2];
+    private GetNearByHospitals getNearByHospitals = new GetNearByHospitals();
     private int proximityRaduis = 10000;
+    private String url = "";
+    HashMap<String, String> googleNearByHospitalspec;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,60 +64,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        loadHospitals();
+        googleNearByHospitalspec = new HashMap<>();
+
+        Toast.makeText(this,"Searching for near by Hospitals", Toast.LENGTH_LONG).show();
 
         showlist = findViewById(R.id.listHospitals);
         showlist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Log.d("size in maps",String.format("%s",hospitals.size()));
                 Intent hospitalsListIntent = new Intent(MapsActivity.this, ListOfHospitals.class);
                 Bundle bundle = new Bundle();
-                bundle.putStringArrayList("hospitals",hospitals);
+                bundle.putSerializable("hospitals", googleNearByHospitalspec);
                 hospitalsListIntent.putExtras(bundle);
                 startActivity(hospitalsListIntent);
             }
         });
     }
 
-    private void loadHospitals() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference().child("hospitals");
-
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                hospitals.clear();
-                snapshot.getChildren().forEach(snap ->{
-                    Hospital hospital = snap.getValue(Hospital.class);
-                    hospitals.add(hospital.getName());
-                });
-
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-      /*String url = getUrL(26.7034,27.8077, hospital);
-        tranferData[0] = mMap;
-        tranferData[1] = url;
-
-        getNearByHospitals.execute(tranferData);
-        Toast.makeText(this,"Searching for near by Hospitals", Toast.LENGTH_SHORT).show();*/
-    }
 
     private String getUrL(double lat, double lng, String nearByhospital){
-        StringBuilder googleUrl =new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        StringBuilder googleUrl =new StringBuilder("https://maps.googleapis.com/maps/api/place/textsearch/json?");
         googleUrl.append("location="+lat+","+lng);
         googleUrl.append("&radius="+proximityRaduis);
-        googleUrl.append("&type="+nearByhospital);
+        googleUrl.append("&query="+nearByhospital);
+        googleUrl.append("&query="+"medical clinics");
         googleUrl.append("&sensor=true");
-        googleUrl.append("&key="+"AIzaSyBCxMwuCxy04VgBehF2QCdIJvhZShh2IwU");
+        googleUrl.append("&fields=name,rating,formatted_phone_number");
+        googleUrl.append("&key="+"AIzaSyBP4T78uTEEN0uD1lIwV7OGwygW8Bxbq7E");
 
         Log.d("google maps url","url=" + googleUrl);
         return googleUrl.toString();
@@ -155,6 +134,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (locationPermissionGranted) {
                 mMap.setMyLocationEnabled(true);
                 mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
             } else {
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -172,10 +152,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         updateLocationUI();
         getDeviceLocation();
-
     }
 
-    private void getDeviceLocation() {
+    private void getDeviceLocation(){
         try {
             if (locationPermissionGranted) {
                 fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -189,12 +168,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             lastKnownLocation = task.getResult();
                             latitud = lastKnownLocation.getLatitude();
                             longitude = lastKnownLocation.getLongitude();
+
+                            Log.d("location", String.valueOf(latitud) + " "+ String.valueOf(longitude));
                             if (lastKnownLocation != null) {
                                 LatLng currLoc = new LatLng(latitud, longitude);
                                 mCurrLocationMarker = mMap.addMarker(new MarkerOptions().position(currLoc).title("Me"));
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                         new LatLng(lastKnownLocation.getLatitude(),
                                                 lastKnownLocation.getLongitude()), 15));
+
+                                url = getUrL(latitud,longitude, hospital);
+                                Log.d("location cord",String.valueOf(latitud) + " "+ String.valueOf(longitude));
+                                tranferData[0] = mMap;
+                                tranferData[1] = url;
+                                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                                    @Override
+                                    public boolean onMarkerClick(Marker marker) {
+                                        new AlertDialog.Builder(MapsActivity.this)
+                                                .setTitle(marker.getTitle())
+                                                .setIcon(R.drawable.medicalloc)
+                                                .setMessage(marker.getSnippet())
+                                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        dialog.dismiss();
+                                                    }
+                                                })
+                                                .show();
+                                        return false;
+                                    }
+                                });
+                                getNearByHospitals.execute(tranferData);
+                                updateLocationUI();
+                                //googleNearByHospitalspec = getNearByHospitals.getHospitals();
+                                //Log.d("size in maps",String.format("%s",googleNearByHospitalspec.size()));
                             }
                         } else {
                             Log.d(null, "Current location is null. Using defaults.");

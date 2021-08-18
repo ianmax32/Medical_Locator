@@ -18,6 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ListOfHospitals extends AppCompatActivity {
 
@@ -32,12 +33,14 @@ public class ListOfHospitals extends AppCompatActivity {
 
         recycler = findViewById(R.id.recycler_view);
         //Log.d("size before loop",String.format("%s",hospitals.size()))
-        ArrayList<String> hospitals = this.getIntent().getExtras().getStringArrayList("hospitals");
-        Log.d("size in list of hospitals",String.format("%s",hospitals.size()));
-        recycler_view_adapter adapter= new recycler_view_adapter(this,hospitals);
+        Bundle bundle = this.getIntent().getExtras();
+        HashMap<String,String> hospitals =(HashMap<String,String>)bundle.getSerializable("hospitals");
+        Log.d("list of hospitals size",String.format("%s",hospitals.size()));
+        Log.d("list of hospitals",hospitals.toString());
+        /*recycler_view_adapter adapter= new recycler_view_adapter(this,hospitals);
         recycler.setLayoutManager(new LinearLayoutManager(this));
         recycler.setAdapter(adapter);
-
+*/
 
     }
 
